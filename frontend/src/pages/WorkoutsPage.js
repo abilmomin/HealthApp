@@ -1,7 +1,7 @@
 import { useEffect, useState, useCallback } from 'react';
 import { useAuth } from '@/contexts/AuthContext';
 import axios from 'axios';
-import { Plus, Trash2, Dumbbell, Clock, Search, ChevronDown, ChevronUp, Share2, X } from 'lucide-react';
+import { Plus, Trash2, Dumbbell, Clock, Search, ChevronDown, ChevronUp, Share2, X, Info } from 'lucide-react';
 
 const API = `${process.env.REACT_APP_BACKEND_URL}/api`;
 
@@ -9,11 +9,13 @@ export default function WorkoutsPage() {
   const { getHeaders } = useAuth();
   const [workouts, setWorkouts] = useState([]);
   const [exercises, setExercises] = useState([]);
+  const [bodyParts, setBodyParts] = useState([]);
   const [showForm, setShowForm] = useState(false);
   const [loading, setLoading] = useState(true);
   const [expandedId, setExpandedId] = useState(null);
   const [filterGroup, setFilterGroup] = useState('');
   const [searchEx, setSearchEx] = useState('');
+  const [selectedExDetail, setSelectedExDetail] = useState(null);
 
   const [form, setForm] = useState({ name: '', duration_minutes: 30, notes: '', exercises: [] });
   const [currentExercise, setCurrentExercise] = useState({ name: '', sets: 3, reps: 10, weight: 0 });
@@ -26,19 +28,24 @@ export default function WorkoutsPage() {
     setLoading(false);
   }, [getHeaders]);
 
+  const fetchBodyParts = useCallback(async () => {
+    try {
+      const res = await axios.get(`${API}/exercises/bodyparts`);
+      setBodyParts(res.data || []);
+    } catch (e) { console.error(e); }
+  }, []);
+
   const fetchExercises = useCallback(async () => {
     try {
-      let url = `${API}/exercises`;
-      const params = [];
-      if (filterGroup) params.push(`muscle_group=${filterGroup}`);
-      if (searchEx) params.push(`q=${searchEx}`);
-      if (params.length) url += `?${params.join('&')}`;
+      let url = `${API}/exercises?limit=20`;
+      if (filterGroup) url += `&muscle_group=${encodeURIComponent(filterGroup)}`;
+      if (searchEx) url += `&q=${encodeURIComponent(searchEx)}`;
       const res = await axios.get(url);
       setExercises(res.data);
     } catch (e) { console.error(e); }
   }, [filterGroup, searchEx]);
 
-  useEffect(() => { fetchWorkouts(); }, [fetchWorkouts]);
+  useEffect(() => { fetchWorkouts(); fetchBodyParts(); }, [fetchWorkouts, fetchBodyParts]);
   useEffect(() => { fetchExercises(); }, [fetchExercises]);
 
   const addExercise = () => {
@@ -76,7 +83,9 @@ export default function WorkoutsPage() {
     } catch (e) { console.error(e); }
   };
 
-  const muscleGroups = ['Chest', 'Back', 'Shoulders', 'Arms', 'Legs', 'Core', 'Cardio', 'Full Body'];
+  const selectExFromLibrary = (ex) => {
+    setCurrentExercise(c => ({ ...c, name: ex.name }));
+  };
 
   return (
     <div className="space-y-6" data-testid="workouts-page">
@@ -127,11 +136,11 @@ export default function WorkoutsPage() {
             </div>
 
             <div className="border-t border-white/10 pt-4">
-              <h4 className="text-sm uppercase tracking-[0.15em] text-zinc-400 font-['Manrope'] mb-3">Add Exercises</h4>
-              <div className="flex flex-wrap gap-2 mb-3">
-                <button type="button" onClick={() => setFilterGroup('')} className={`px-3 py-1 rounded-md text-xs font-['Manrope'] ${!filterGroup ? 'bg-[#FF3B30] text-white' : 'bg-white/5 text-zinc-400 hover:text-white'}`}>All</button>
-                {muscleGroups.map(g => (
-                  <button key={g} type="button" onClick={() => setFilterGroup(g)} className={`px-3 py-1 rounded-md text-xs font-['Manrope'] ${filterGroup === g ? 'bg-[#FF3B30] text-white' : 'bg-white/5 text-zinc-400 hover:text-white'}`}>{g}</button>
+              <h4 className="text-sm uppercase tracking-[0.15em] text-zinc-400 font-['Manrope'] mb-3">Exercise Library</h4>
+              <div className="flex flex-wrap gap-2 mb-3 overflow-x-auto pb-2">
+                <button type="button" onClick={() => setFilterGroup('')} className={`px-3 py-1.5 rounded-md text-xs font-['Manrope'] whitespace-nowrap transition-colors ${!filterGroup ? 'bg-[#FF3B30] text-white' : 'bg-white/5 text-zinc-400 hover:text-white'}`}>All</button>
+                {bodyParts.map(g => (
+                  <button key={g} type="button" onClick={() => setFilterGroup(g)} className={`px-3 py-1.5 rounded-md text-xs font-['Manrope'] capitalize whitespace-nowrap transition-colors ${filterGroup === g ? 'bg-[#FF3B30] text-white' : 'bg-white/5 text-zinc-400 hover:text-white'}`}>{g}</button>
                 ))}
               </div>
               <div className="relative mb-3">
@@ -144,19 +153,65 @@ export default function WorkoutsPage() {
                   data-testid="exercise-search-input"
                 />
               </div>
-              <div className="grid grid-cols-2 md:grid-cols-4 gap-2 max-h-32 overflow-y-auto mb-3">
-                {exercises.slice(0, 12).map(ex => (
-                  <button
-                    key={ex.name}
-                    type="button"
-                    onClick={() => setCurrentExercise(c => ({ ...c, name: ex.name }))}
-                    className={`text-left px-3 py-2 rounded-md text-xs font-['Manrope'] transition-colors ${currentExercise.name === ex.name ? 'bg-[#FF3B30] text-white' : 'bg-white/5 text-zinc-300 hover:bg-white/10'}`}
+              <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-2 max-h-48 overflow-y-auto mb-3">
+                {exercises.slice(0, 16).map((ex, idx) => (
+                  <div
+                    key={ex.id || ex.name + idx}
+                    className={`relative text-left px-3 py-2 rounded-md text-xs font-['Manrope'] transition-colors cursor-pointer group ${currentExercise.name === ex.name ? 'bg-[#FF3B30] text-white' : 'bg-white/5 text-zinc-300 hover:bg-white/10'}`}
                   >
-                    {ex.name}
-                    <span className="block text-zinc-500 text-[10px]">{ex.muscle_group}</span>
-                  </button>
+                    <div className="flex items-start gap-2" onClick={() => selectExFromLibrary(ex)}>
+                      {ex.gif_url && (
+                        <img src={ex.gif_url} alt={ex.name} className="w-10 h-10 rounded object-cover flex-shrink-0" loading="lazy" />
+                      )}
+                      <div className="min-w-0">
+                        <p className="truncate font-medium">{ex.name}</p>
+                        <span className="text-zinc-500 text-[10px] capitalize">{ex.muscle_group || ex.target}</span>
+                        {ex.equipment && <span className="text-zinc-600 text-[10px] ml-1">- {ex.equipment}</span>}
+                      </div>
+                    </div>
+                    {ex.instructions && ex.instructions.length > 0 && (
+                      <button
+                        type="button"
+                        onClick={(e) => { e.stopPropagation(); setSelectedExDetail(selectedExDetail?.name === ex.name ? null : ex); }}
+                        className="absolute top-1 right-1 p-1 text-zinc-500 hover:text-white opacity-0 group-hover:opacity-100 transition-opacity"
+                      >
+                        <Info className="w-3 h-3" />
+                      </button>
+                    )}
+                  </div>
                 ))}
               </div>
+
+              {selectedExDetail && (
+                <div className="bg-[#0f0f10] border border-white/10 rounded-md p-4 mb-3">
+                  <div className="flex items-start gap-4">
+                    {selectedExDetail.gif_url && (
+                      <img src={selectedExDetail.gif_url} alt={selectedExDetail.name} className="w-24 h-24 rounded-md object-cover" />
+                    )}
+                    <div className="flex-1 min-w-0">
+                      <h5 className="text-white font-['Manrope'] font-medium">{selectedExDetail.name}</h5>
+                      <div className="flex flex-wrap gap-2 mt-1 mb-2">
+                        <span className="text-[10px] px-2 py-0.5 bg-[#FF3B30]/20 text-[#FF3B30] rounded capitalize">{selectedExDetail.muscle_group || selectedExDetail.target}</span>
+                        <span className="text-[10px] px-2 py-0.5 bg-[#007AFF]/20 text-[#007AFF] rounded capitalize">{selectedExDetail.equipment}</span>
+                        {selectedExDetail.secondary_muscles?.map(m => (
+                          <span key={m} className="text-[10px] px-2 py-0.5 bg-white/5 text-zinc-400 rounded">{m}</span>
+                        ))}
+                      </div>
+                      {selectedExDetail.instructions?.length > 0 && (
+                        <ol className="text-xs text-zinc-400 font-['Manrope'] space-y-1 list-decimal list-inside max-h-20 overflow-y-auto">
+                          {selectedExDetail.instructions.map((step, i) => (
+                            <li key={i}>{step}</li>
+                          ))}
+                        </ol>
+                      )}
+                    </div>
+                    <button type="button" onClick={() => setSelectedExDetail(null)} className="text-zinc-500 hover:text-white">
+                      <X className="w-4 h-4" />
+                    </button>
+                  </div>
+                </div>
+              )}
+
               <div className="flex flex-wrap gap-3 items-end">
                 <input placeholder="Exercise name" value={currentExercise.name} onChange={e => setCurrentExercise(c => ({ ...c, name: e.target.value }))} className="flex-1 min-w-[150px] bg-[#0f0f10] border border-white/10 rounded-md px-3 py-2 text-sm text-white placeholder:text-zinc-500 font-['Manrope'] focus:outline-none focus:border-[#FF3B30]" data-testid="exercise-name-input" />
                 <div className="flex items-center gap-1">
@@ -177,6 +232,7 @@ export default function WorkoutsPage() {
 
             {form.exercises.length > 0 && (
               <div className="space-y-2">
+                <h4 className="text-xs uppercase tracking-[0.15em] text-zinc-400 font-['Manrope']">Added Exercises ({form.exercises.length})</h4>
                 {form.exercises.map((ex) => (
                   <div key={ex.id} className="flex items-center justify-between bg-white/5 px-4 py-2 rounded-md">
                     <span className="text-sm text-white font-['Manrope']">{ex.name} - {ex.sets}x{ex.reps} @ {ex.weight}lbs</span>
@@ -217,7 +273,9 @@ export default function WorkoutsPage() {
                   </div>
                 </div>
                 <div className="flex items-center gap-2">
-                  {!w.shared && (
+                  {w.shared ? (
+                    <span className="text-[10px] px-2 py-1 bg-[#007AFF]/20 text-[#007AFF] rounded font-['Manrope']">Shared</span>
+                  ) : (
                     <button onClick={(e) => { e.stopPropagation(); shareWorkout(w.id); }} className="p-2 text-zinc-500 hover:text-[#007AFF]" data-testid={`share-workout-${w.id}`}>
                       <Share2 className="w-4 h-4" />
                     </button>

@@ -23,6 +23,7 @@ db = client[os.environ['DB_NAME']]
 
 FIREBASE_PROJECT_ID = os.environ.get('FIREBASE_PROJECT_ID', '')
 NUTRITION_API_KEY = os.environ.get('NUTRITION_API_KEY', '')
+EXERCISE_API_KEY = os.environ.get('EXERCISE_API_KEY', '')
 
 app = FastAPI()
 api_router = APIRouter(prefix="/api")
@@ -353,14 +354,67 @@ EXERCISES_DB = [
     {"name": "Box Jumps", "muscle_group": "Full Body", "equipment": "Box", "type": "strength"},
 ]
 
+# ExerciseDB API cache (10 minute TTL)
+exercise_api_cache = TTLCache(maxsize=50, ttl=600)
+
 @api_router.get("/exercises")
-async def get_exercises(muscle_group: Optional[str] = None, q: Optional[str] = None):
+async def get_exercises(muscle_group: Optional[str] = None, q: Optional[str] = None, limit: int = 20, offset: int = 0):
+    # Try ExerciseDB API first
+    if EXERCISE_API_KEY:
+        try:
+            cache_key = f"{muscle_group}:{q}:{limit}:{offset}"
+            if cache_key in exercise_api_cache:
+                return exercise_api_cache[cache_key]
+            headers = {
+                "X-RapidAPI-Key": EXERCISE_API_KEY,
+                "X-RapidAPI-Host": "exercisedb.p.rapidapi.com"
+            }
+            async with httpx.AsyncClient() as http_client:
+                if q:
+                    url = f"https://exercisedb.p.rapidapi.com/exercises/name/{q.lower()}?limit={limit}&offset={offset}"
+                elif muscle_group:
+                    url = f"https://exercisedb.p.rapidapi.com/exercises/bodyPart/{muscle_group.lower()}?limit={limit}&offset={offset}"
+                else:
+                    url = f"https://exercisedb.p.rapidapi.com/exercises?limit={limit}&offset={offset}"
+                resp = await http_client.get(url, headers=headers, timeout=10)
+                if resp.status_code == 200:
+                    data = resp.json()
+                    if isinstance(data, list):
+                        results = [{
+                            "id": ex.get("id", ""),
+                            "name": ex.get("name", "").title(),
+                            "muscle_group": ex.get("bodyPart", "").title(),
+                            "target": ex.get("target", "").title(),
+                            "equipment": ex.get("equipment", "").title(),
+                            "type": "strength",
+                            "gif_url": ex.get("gifUrl", ""),
+                            "secondary_muscles": [m.title() for m in ex.get("secondaryMuscles", [])],
+                            "instructions": ex.get("instructions", []),
+                        } for ex in data]
+                        exercise_api_cache[cache_key] = results
+                        return results
+        except Exception as e:
+            logger.warning(f"ExerciseDB API failed, using local DB: {e}")
+    # Fallback to local exercise database
     results = EXERCISES_DB
     if muscle_group:
         results = [e for e in results if e['muscle_group'].lower() == muscle_group.lower()]
     if q:
         results = [e for e in results if q.lower() in e['name'].lower()]
     return results
+
+@api_router.get("/exercises/bodyparts")
+async def get_body_parts():
+    if EXERCISE_API_KEY:
+        try:
+            headers = {"X-RapidAPI-Key": EXERCISE_API_KEY, "X-RapidAPI-Host": "exercisedb.p.rapidapi.com"}
+            async with httpx.AsyncClient() as http_client:
+                resp = await http_client.get("https://exercisedb.p.rapidapi.com/exercises/bodyPartList", headers=headers, timeout=10)
+                if resp.status_code == 200:
+                    return resp.json()
+        except Exception:
+            pass
+    return ["chest", "back", "shoulders", "upper arms", "lower arms", "upper legs", "lower legs", "cardio", "waist", "neck"]
 
 # ---- Social Endpoints ----
 @api_router.post("/social/follow/{target_uid}")

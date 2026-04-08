@@ -81,6 +81,18 @@ class HealthmaxAPITester:
         """Test streaks endpoint without auth (should return 401)"""
         return self.run_test("Streaks (No Auth)", "GET", "stats/streaks", 401)
 
+    def test_exercises_with_query(self):
+        """Test exercises endpoint with search query (should work without auth)"""
+        return self.run_test("Exercises with Query (bench)", "GET", "exercises?q=bench", 200)
+
+    def test_exercises_with_muscle_group(self):
+        """Test exercises endpoint with muscle group filter (should work without auth)"""
+        return self.run_test("Exercises with Muscle Group (Chest)", "GET", "exercises?muscle_group=Chest", 200)
+
+    def test_exercises_bodyparts(self):
+        """Test exercises bodyparts endpoint (should work without auth)"""
+        return self.run_test("Exercises Body Parts", "GET", "exercises/bodyparts", 200)
+
 def main():
     print("🏃‍♂️ Starting Healthmax API Tests...")
     print("=" * 50)
@@ -92,6 +104,11 @@ def main():
 
     # Test public endpoint (no auth required)
     tester.test_exercises_no_auth()
+
+    # Test exercise-related endpoints (no auth required)
+    tester.test_exercises_with_query()
+    tester.test_exercises_with_muscle_group()
+    tester.test_exercises_bodyparts()
 
     # Test protected endpoints (should return 401 without auth)
     tester.test_auth_sync_no_token()

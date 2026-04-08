@@ -1,0 +1,107 @@
+{
+  "theme": "dark",
+  "archetype": "Archetype 2: The Performance Pro",
+  "design_philosophy": "Tactical Minimalism. Command-center focus for the gym. Elite athleticism. Flat surfaces, stark contrasts, glowing accents strictly for kinetic triggers.",
+  "typography": {
+    "fonts": [
+      {
+        "family": "Barlow Condensed",
+        "purpose": "Headings, Large Metrics, Numbers",
+        "weights": ["600", "700", "900"],
+        "import_url": "https://fonts.googleapis.com/css2?family=Barlow+Condensed:wght@600;700;900&display=swap"
+      },
+      {
+        "family": "Manrope",
+        "purpose": "Body text, UI labels, dense data",
+        "weights": ["400", "500", "600"],
+        "import_url": "https://fonts.googleapis.com/css2?family=Manrope:wght@400;500;600&display=swap"
+      }
+    ],
+    "scale": {
+      "h1": "text-4xl sm:text-5xl lg:text-6xl tracking-tighter uppercase font-black font-['Barlow_Condensed']",
+      "h2": "text-2xl sm:text-3xl lg:text-4xl tracking-tight uppercase font-bold font-['Barlow_Condensed']",
+      "h3": "text-xl sm:text-2xl tracking-tight font-bold font-['Barlow_Condensed']",
+      "body": "text-base tracking-normal font-['Manrope']",
+      "small_labels": "text-xs tracking-[0.2em] uppercase text-zinc-400 font-['Manrope']"
+    }
+  },
+  "colors": {
+    "background": {
+      "page": "#0f0f10",
+      "surface": "#161618",
+      "surface_hover": "#1e1e21"
+    },
+    "primary": "#FF3B30",
+    "primary_hover": "#FF1A0D",
+    "accent": "#007AFF",
+    "text": {
+      "primary": "#FFFFFF",
+      "secondary": "#A1A1AA",
+      "muted": "#52525B"
+    },
+    "border": "rgba(255, 255, 255, 0.1)",
+    "success": "#34C759",
+    "warning": "#FF9F0A"
+  },
+  "layout": {
+    "dashboard_grid": {
+      "type": "control_room",
+      "classes": "grid grid-cols-1 md:grid-cols-3 lg:grid-cols-4 gap-4 md:gap-6",
+      "rules": "Every pixel must be utilized. No jagged bottoms. Use col-span-2 or 3 for primary charts, col-span-1 for summary metrics."
+    },
+    "social_grid": {
+      "type": "tetris",
+      "classes": "grid grid-cols-1 md:grid-cols-8 lg:grid-cols-12 gap-6",
+      "rules": "Asymmetry. Visual tension. Tall and wide cards mixed."
+    },
+    "spacing": "Dense for dashboard metrics (p-4 or p-6), generous for layout gaps (gap-6)."
+  },
+  "surfaces_and_effects": {
+    "cards": "Flat background (#161618), sharp 1px border (border-white/10), rounded-md (max 8px radius). No generic drop shadows.",
+    "hover": "-translate-y-1 transition-transform duration-200, border-white/20.",
+    "active_glow": "For primary CTA and streaks: box-shadow: 0 0 15px rgba(255,59,48,0.4)"
+  },
+  "components": {
+    "buttons": "Square or rounded-md corners, font-heading uppercase, tracking-wider, heavy weight. Primary: bg-[#FF3B30] text-white hover:bg-white hover:text-[#0f0f10] transition-colors.",
+    "charts": "Recharts with transparent backgrounds, stark white axes, and bright neon lines (red/blue) without gradient fills under them.",
+    "inputs": "Flat dark bg, border-white/20, text-white. Focus ring: 2px solid #FF3B30."
+  },
+  "media": {
+    "login_hero_bg": "https://static.prod-images.emergentagent.com/jobs/f54cf9bd-3ddd-4220-8066-b3ae910c6ea1/images/40ed9d837761719164e155863f12d128bdadbd541f113e4da7b9cb82cf2fd058.png",
+    "streak_badge_icon": "https://static.prod-images.emergentagent.com/jobs/f54cf9bd-3ddd-4220-8066-b3ae910c6ea1/images/0034136d4e3c299fe0b9078b399ddacc4f0689506a70a27c141b96d85f34cac2.png",
+    "dashboard_texture_bg": "https://static.prod-images.emergentagent.com/jobs/f54cf9bd-3ddd-4220-8066-b3ae910c6ea1/images/06cf0ed3f7b1f2e579bfc3cfc21a6eadb71e33ffcb30a48155ff230a9e0f7481.png",
+    "social_feed": [
+      "https://images.unsplash.com/photo-1689876593463-6678f2e8d4f2?crop=entropy&cs=srgb&fm=jpg&ixid=M3w4NjAzMjh8MHwxfHNlYXJjaHwzfHxhdGhsZXRlJTIwd29ya291dCUyMGd5bXxlbnwwfHx8fDE3NzU2Mzg3Nzd8MA&ixlib=rb-4.1.0&q=85",
+      "https://images.unsplash.com/photo-1734189605012-f03d97a4d98f?crop=entropy&cs=srgb&fm=jpg&ixid=M3w4NjAzMjh8MHwxfHNlYXJjaHwyfHxhdGhsZXRlJTIwd29ya291dCUyMGd5bXxlbnwwfHx8fDE3NzU2Mzg3Nzd8MA&ixlib=rb-4.1.0&q=85",
+      "https://images.unsplash.com/photo-1589472500102-79d9284b8a72?crop=entropy&cs=srgb&fm=jpg&ixid=M3w4NjAzMjh8MHwxfHNlYXJjaHw0fHxhdGhsZXRlJTIwd29ya291dCUyMGd5bXxlbnwwfHx8fDE3NzU2Mzg3Nzd8MA&ixlib=rb-4.1.0&q=85"
+    ],
+    "nutrition_logger": [
+      "https://images.unsplash.com/photo-1642339800099-921df1a0a958?crop=entropy&cs=srgb&fm=jpg&ixid=M3w3NDQ2NDN8MHwxfHNlYXJjaHwzfHxoZWFsdGh5JTIwbnV0cml0aW9uJTIwYm93bHxlbnwwfHx8fDE3NzU2Mzg3Nzd8MA&ixlib=rb-4.1.0&q=85",
+      "https://images.unsplash.com/photo-1542986130-d0c46350cf30?crop=entropy&cs=srgb&fm=jpg&ixid=M3w3NDQ2NDN8MHwxfHNlYXJjaHwyfHxoZWFsdGh5JTIwbnV0cml0aW9uJTIwYm93bHxlbnwwfHx8fDE3NzU2Mzg3Nzd8MA&ixlib=rb-4.1.0&q=85"
+    ],
+    "avatars": [
+      "https://images.unsplash.com/photo-1750521280945-c533966f103c?crop=entropy&cs=srgb&fm=jpg&ixid=M3w3NDk1ODB8MHwxfHNlYXJjaHwyfHxwb3J0cmFpdCUyMGZpdG5lc3MlMjBhdGhsZXRlfGVufDB8fHx8MTc3NTYzODc3N3ww&ixlib=rb-4.1.0&q=85",
+      "https://images.unsplash.com/photo-1759476530066-94bee6a30c40?crop=entropy&cs=srgb&fm=jpg&ixid=M3w3NDk1ODB8MHwxfHNlYXJjaHwzfHxwb3J0cmFpdCUyMGZpdG5lc3MlMjBhdGhsZXRlfGVufDB8fHx8MTc3NTYzODc3N3ww&ixlib=rb-4.1.0&q=85",
+      "https://images.unsplash.com/photo-1759476533830-8cc4b219f0c8?crop=entropy&cs=srgb&fm=jpg&ixid=M3w3NDk1ODB8MHwxfHNlYXJjaHwxfHxwb3J0cmFpdCUyMGZpdG5lc3MlMjBhdGhsZXRlfGVufDB8fHx8MTc3NTYzODc3N3ww&ixlib=rb-4.1.0&q=85"
+    ]
+  },
+  "icons": {
+    "library": "lucide-react",
+    "style": "Clean, sharp outlines. Colored in accent colors for active states."
+  },
+  "testing": {
+    "requirements": "All interactive elements, forms, and major metric containers must have a 'data-testid' attribute (e.g., data-testid='workout-log-button')."
+  },
+  "instructions_to_main_agent": [
+    "Install and configure Tailwind and Shadcn CSS components per standard usage.",
+    "Add 'Barlow Condensed' and 'Manrope' to Google Fonts link in index.html.",
+    "Apply deep obsidian background to body (`bg-[#0f0f10] text-white`).",
+    "For the login page, use `login_hero_bg` with a subtle linear-gradient overlay for heavy impact.",
+    "The Dashboard must use the 'Control Room' grid layout: dense metrics, stark contrasts.",
+    "Avoid the generic Vercel aesthetic. No excessive glassmorphism. Use flat surfaces with sharp 1px borders.",
+    "Ensure all Shadcn components (buttons, inputs) are heavily themed to match tactical minimalism. Rounded-md max.",
+    "For charts, use Recharts. Make background transparent, axes white/gray, and data lines stark neon red (#FF3B30).",
+    "Use Nutritionix API and Firebase as requested in the functional spec.",
+    "When rendering feeds, map to the URLs provided in `social_feed` and `avatars` arrays. NO placeholders."
+  ]
+}

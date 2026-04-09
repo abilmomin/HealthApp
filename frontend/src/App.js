@@ -15,8 +15,8 @@ function ProtectedRoute({ children }) {
   const { user, loading } = useAuth();
   if (loading) {
     return (
-      <div className="min-h-screen bg-[#0f0f10] flex items-center justify-center">
-        <div className="w-10 h-10 border-2 border-[#FF3B30] border-t-transparent rounded-full animate-spin" />
+      <div className="min-h-screen bg-[#1a2e1a] flex items-center justify-center">
+        <div className="w-10 h-10 border-2 border-[#5b9a3c] border-t-transparent rounded-full animate-spin" />
       </div>
     );
   }
@@ -28,8 +28,8 @@ function AuthRoute({ children }) {
   const { user, loading } = useAuth();
   if (loading) {
     return (
-      <div className="min-h-screen bg-[#0f0f10] flex items-center justify-center">
-        <div className="w-10 h-10 border-2 border-[#FF3B30] border-t-transparent rounded-full animate-spin" />
+      <div className="min-h-screen bg-[#1a2e1a] flex items-center justify-center">
+        <div className="w-10 h-10 border-2 border-[#5b9a3c] border-t-transparent rounded-full animate-spin" />
       </div>
     );
   }
@@ -39,7 +39,7 @@ function AuthRoute({ children }) {
 
 function AppLayout({ children }) {
   return (
-    <div className="min-h-screen bg-[#0f0f10]">
+    <div className="min-h-screen bg-[#1a2e1a]">
       <Sidebar />
       <main className="md:ml-64 p-6 md:p-8 pt-16 md:pt-8">
         {children}
